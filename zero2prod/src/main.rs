@@ -1,3 +1,3 @@
 fn main() {
-    // here
+    println!("Testing CI");
 }
