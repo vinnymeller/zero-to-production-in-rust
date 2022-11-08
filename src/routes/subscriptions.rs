@@ -14,9 +14,9 @@ pub async fn subscribe(
     form: web::Form<SubscriberFormData>,
     connection: web::Data<PgPool>,
 ) -> HttpResponse {
-    let res = sqlx::query!(
+    match sqlx::query!(
         r#"INSERT INTO subscriptions (id, email, name, subscribed_at)
-        VALUES 
+        VALUES
         ($1, $2, $3, $4)"#,
         Uuid::new_v4(),
         &form.email,
@@ -24,9 +24,14 @@ pub async fn subscribe(
         Utc::now()
     )
     .execute(connection.get_ref())
-    .await;
-    match res {
-        Ok(_) => HttpResponse::Ok().finish(),
-        Err(_) => HttpResponse::InternalServerError().finish(),
+    .await {
+        Ok(_) => {
+            log::info!("New subscriber details have been saved.");
+            HttpResponse::Ok().finish()
+        },
+        Err(e) => {
+            log::error!("Failed to execute query: {:?}", e);
+            HttpResponse::InternalServerError().finish()
+        }
     }
 }
