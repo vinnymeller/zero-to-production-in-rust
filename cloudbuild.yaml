@@ -1,17 +1,26 @@
 steps:
+  # pull the previous docker image to utilize the cache
+- name: 'gcr.io/cloud-builders/docker'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - 'docker pull gcr.io/$PROJECT_ID/newsletter:latest || exit 0' # exit 0 to ignore errors, if we are running the build for the first time
+  # build the image with latest code
 - name: 'gcr.io/cloud-builders/docker'
   args:
   - 'build'
-  - '-t' 
-  - 'gcr.io/vinnysplayground/newsletter:latest'
+  - '-t'
+  - 'gcr.io/$PROJECT_ID/newsletter:latest'
   - '-f'
   - './Dockerfile'
   - '--cache-from'
-  - 'gcr.io/vinnysplayground/newsletter:latest'
+  - 'gcr.io/$PROJECT_ID/newsletter:latest'
   - '.'
   timeout: 3600s
+  # push the updated image
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/vinnysplayground/newsletter:latest']
+  args: ['push', 'gcr.io/$PROJECT_ID/newsletter:latest']
+  # deploy the service with latest image
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
   args:
@@ -19,7 +28,7 @@ steps:
   - 'deploy'
   - 'newsletter'
   - '--image'
-  - 'gcr.io/vinnysplayground/newsletter:latest'
+  - 'gcr.io/$PROJECT_ID/newsletter:latest'
   - '--region'
   - 'us-central1'
   - '--allow-unauthenticated'
