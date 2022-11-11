@@ -1,0 +1,24 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/vinnysplayground/newsletter:latest', '-f', './Dockerfile', '.']
+  timeout: 3600s
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/vinnysplayground/newsletter:latest']
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args:
+  - 'run'
+  - 'deploy'
+  - 'newsletter '
+  - '--image'
+  - 'gcr.io/vinnysplayground/newsletter:latest'
+  - '--region'
+  - 'us-central1'
+  - '--allow-unauthenticated'
+  - '--memory'
+  - '1Gi'
+  - '--cpu'
+  - '1'
+  - '--max-instances'
+  - '1'
+
