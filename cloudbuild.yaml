@@ -1,6 +1,14 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/vinnysplayground/newsletter:latest', '-f', './Dockerfile', '.']
+  args:
+  - 'build'
+  - '-t' 
+  - 'gcr.io/vinnysplayground/newsletter:latest'
+  - '-f'
+  - './Dockerfile'
+  - '--cache-from'
+  - 'gcr.io/vinnysplayground/newsletter:latest'
+  - '.'
   timeout: 3600s
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/vinnysplayground/newsletter:latest']
