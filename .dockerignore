@@ -1,4 +1,6 @@
 .env
+.git/
+.github/
 target/
 tests/
 Dockerfile
