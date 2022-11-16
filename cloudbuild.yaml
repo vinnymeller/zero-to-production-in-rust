@@ -22,24 +22,16 @@ steps:
   args: ['push', 'gcr.io/$PROJECT_ID/newsletter:latest']
   # deploy the service with latest image
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  entrypoint: gcloud
+  entrypoint: bash
   args:
-  - 'run'
-  - 'deploy'
-  - 'newsletter'
-  - '--image'
-  - 'gcr.io/$PROJECT_ID/newsletter:latest'
-  - '--region'
-  - 'us-central1'
-  - '--allow-unauthenticated'
-  - '--memory'
-  - '1Gi'
-  - '--cpu'
-  - '1'
-  - '--max-instances'
-  - '1'
-  - '--set-env-vars'
-  - 'APP_DATABASE__HOST=$$DBHOST,APP_DATABASE__PASS=$$DBPASS,APP_DATABASE__PORT=$$DBPORT,APP_DATABASE__USER=$$DBUSER,APP_DATABASE__DATABASE=$$DBDB'
+  - -c
+  - |
+    gcloud run deploy newsletter \
+      --image gcr.io/$PROJECT_ID/newsletter:latest \
+      --region us-central1 \
+      --allow-unauthenticated \
+      --memory 1Gi --cpu 1 --max-instances 1 \
+      --set-env-vars APP_DATABASE__HOST=$$DBHOST,APP_DATABASE__PASS=$$DBPASS,APP_DATABASE__PORT=$$DBPORT,APP_DATABASE__USER=$$DBUSER,APP_DATABASE__DATABASE=$$DBDB
   secretEnv: ['DBHOST', 'DBPASS', 'DBPORT', 'DBUSER', 'DBDB']
 availableSecrets:
   secretManager:
